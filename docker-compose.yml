@@ -1,0 +1,27 @@
+# From: https://opensearch.org/docs/latest/opensearch/install/docker#sample-docker-compose-file
+version: '1'
+services:
+  opensearch:
+    image: opensearchproject/opensearch:2.0.0
+    ports:
+      - 9200:9200
+      - 9600:9600 # required for Performance Analyzer
+    restart: always
+    # volumes:
+    #   - ./data/op:/usr/share/opensearch/data/
+    environment:
+      - 'OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m'
+      - ELASTIC_PASSWORD=elastic
+      - discovery.type=single-node
+      - "DISABLE_SECURITY_PLUGIN=true"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+
+  dashboard:
+    image: opensearchproject/opensearch-dashboards:2.0.0
+    depends_on:
+      - opensearch
+    ports:
+      - 5601:5601
+    environment:
+      - 'OPENSEARCH_HOSTS=["http://opensearch:9200"]' # must be a string with no spaces when specified as an environment variable
+      - 'DISABLE_SECURITY_DASHBOARDS_PLUGIN=true' # disables security dashboards plugin in OpenSearch Dashboards
